@@ -203,5 +203,39 @@ this.$validator.reset()
 5、点击地址保存，调用store中的actons中的方法，并把表单数据传过去，在actions中发送请求异步地修改地址数据  
 6、地址数据写在computed中，它发生改变的时候，会自动更新  
 
+7、确认订单页面（checkout）刷新报错问题  
+问题：只提交一个商品订单，传过来的数组只有一个元素[1128],刷新页面后获取到的值就不是数组了，而是1128  
+解决：在购物车页面，点击提交后，要把所选商品的id传过来，通过如下方法  
+```
+this.$router.push({
+          name: "checkout",
+          query: { id: JSON.stringify(this.selectGoods_id) }
+        })
+```
+selectGoods_id是一个数组，存放所选商品的id  
+**在传数据的时候，如果传的数据是数组、对象，需要先通过JSON.stringify转为JSON字符串，**  
+在checkout页面获取传过来的值时，通过JSON.parse方法再转为JSON格式数据  
+```
+JSON.parse(this.$route.query.id)
+```
+## 14、
+const a=await this.$store.dispatch("address/CHANGEaddressList");  
+```
+  CHANGEaddressList(context){
+           return api.get("/user/addressList",{},{ _slient: true }).then((data)=>{
+                context.commit("changeAddressList",data);
+            })
+        },
+```
+执行CHANGEaddressList时  
+api.get("/user/addressList",{},{ _slient: true })返回一个promise对象p1  
+p1.then(fa,fb)执行后返回一个promise对象p2  
+p2的状态由fa或fb的返回值决定，p2的value是fa或fb的返回值  
+a等于promise对象p2的value  
+总结：  
+const a=await fa;  
+a等于整体的await表达式，它是fa执行后返回的promise对象的value
+
+
 
 
